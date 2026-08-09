@@ -1,0 +1,3206 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="shortcut icon" type="image/png"
+        href="https://raw.githubusercontent.com/stakingreceh/stakingreceh.github.io/refs/heads/main/images/favicon.png">
+
+    <!-- ====== PRIMARY META ====== -->
+    <title>Staking RECEH di BSC 20% APY — Stake & Earn Passive Income Setiap Detik</title>
+    <meta name="description"
+        content="Staking RECEH di BNB Smart Chain (BSC) dengan APY hingga 20%. Stake RECEH, auto earn setiap detik. Lock 30 hari, klaim reward kapan saja. Dashboard real-time.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://stakingreceh.github.io/">
+
+    <!-- ====== OPEN GRAPH ====== -->
+    <meta property="og:title" content="Staking RECEH di BSC 20% APY — Stake & Earn Passive Income Setiap Detik">
+    <meta property="og:description"
+        content="Stake RECEH di BNB Smart Chain, dapatkan APY 20% dengan reward setiap detik. Lock 30 hari, withdraw fleksibel. Dashboard interaktif.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://stakingreceh.github.io/">
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/stakingreceh/stakingreceh.github.io/refs/heads/main/images/staking-receh.png">
+    <meta property="og:image:width" content="250">
+    <meta property="og:image:height" content="250">
+
+    <!-- ====== TWITTER CARD ====== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Staking RECEH di BSC: APY 20% & Auto Compound">
+    <meta name="twitter:description"
+        content="Stake RECEH di BSC, dapatkan APY 20% dengan reward setiap detik. Lock 30 hari, withdraw fleksibel. Dashboard real-time.">
+
+    <!-- ====== JSON-LD (Structured Data) ====== -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "RECEH Staking Dashboard",
+      "description": "Staking RECEH di BNB Smart Chain dengan APY 20%. Fitur auto-compound, lock 30 hari, klaim reward kapan saja.",
+      "applicationCategory": "FinancialApplication",
+      "operatingSystem": "All",
+      "browserRequirements": "Requires Web3 wallet (MetaMask, Bitget, WalletConnect, TokenPocket)",
+      "offers": {
+        "@type": "Offer",
+        "name": "RECEH Staking Reward",
+        "description": "Dapatkan APY 20% per tahun dari staking RECEH di BSC.",
+        "price": "0",
+        "priceCurrency": "BNB"
+      },
+      "url": "https://stakingreceh.github.io/"
+    }
+    </script>
+
+    <!-- ====== FONTS & STYLES ====== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js">
+    </script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <style>
+        /* ============================================================
+       ROOT & RESET — dark mode premium
+       ============================================================ */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            overflow-x: hidden;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg: #05050b;
+            --s1: #0e0e18;
+            --s2: #16162a;
+            --s3: #1e1e38;
+            --c: #d4af37;
+            --c2: #f5e6a3;
+            --cp: #c5a028;
+            --cg: rgba(212, 175, 55, 0.4);
+            --cd: rgba(212, 175, 55, 0.18);
+            --cpurp: rgba(197, 160, 40, 0.2);
+            --text: #f0f0fa;
+            --tm: #b8c6e0;
+            --td: #6b7a9a;
+            --bd: rgba(212, 175, 55, 0.25);
+            --bs: rgba(212, 175, 55, 0.6);
+            --grad-gold: linear-gradient(135deg, #d4af37, #b8942e);
+            --grad-gold-light: linear-gradient(135deg, #e6c45e, #d4af37);
+            --r: 12px;
+            --r2: 16px;
+            --r3: 24px;
+            --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.6);
+        }
+
+        body {
+            background: var(--bg);
+            background-image:
+                radial-gradient(ellipse 70% 50% at 15% 5%, rgba(212, 175, 55, 0.05) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 85% 95%, rgba(197, 160, 40, 0.05) 0%, transparent 55%);
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(rgba(212, 175, 55, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(212, 175, 55, 0.02) 1px, transparent 1px);
+            background-size: 48px 48px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ORBS — decorative blur */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .o1 {
+            width: 560px;
+            height: 560px;
+            background: rgba(212, 175, 55, 0.07);
+            top: -180px;
+            left: -180px;
+            animation: float1 26s ease-in-out infinite;
+        }
+
+        .o2 {
+            width: 420px;
+            height: 420px;
+            background: rgba(197, 160, 40, 0.07);
+            bottom: 0;
+            right: -120px;
+            animation: float2 32s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(40px, 30px);
+            }
+        }
+
+        @keyframes float2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-30px, -40px);
+            }
+        }
+
+        .wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1120px;
+            padding: 20px 16px 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* CARDS — glass + gold accent */
+        .card {
+            background: var(--s1);
+            border: 1px solid var(--bd);
+            border-radius: var(--r3);
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color .3s, box-shadow .3s;
+            backdrop-filter: blur(4px);
+            box-shadow: var(--shadow-card);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--grad-gold);
+            pointer-events: none;
+        }
+
+        .card:hover {
+            border-color: var(--bs);
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.12);
+        }
+
+        /* CORNER BRACKETS */
+        .cc {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+        }
+
+        .cc.tl {
+            top: 0;
+            left: 0;
+            border-top: 2px solid var(--c);
+            border-left: 2px solid var(--c);
+            border-radius: var(--r3) 0 0 0;
+        }
+
+        .cc.tr {
+            top: 0;
+            right: 0;
+            border-top: 2px solid var(--c);
+            border-right: 2px solid var(--c);
+            border-radius: 0 var(--r3) 0 0;
+        }
+
+        .cc.bl {
+            bottom: 0;
+            left: 0;
+            border-bottom: 2px solid var(--c);
+            border-left: 2px solid var(--c);
+            border-radius: 0 0 0 var(--r3);
+        }
+
+        .cc.br {
+            bottom: 0;
+            right: 0;
+            border-bottom: 2px solid var(--c);
+            border-right: 2px solid var(--c);
+            border-radius: 0 0 var(--r3) 0;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding: 18px 22px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-frame {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+
+        .logo-frame img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            position: relative;
+            z-index: 1;
+            display: block;
+        }
+
+        .logo-ring {
+            position: absolute;
+            inset: -3px;
+            border-radius: 15px;
+            background: conic-gradient(from 0deg, var(--c), transparent 40%, var(--cp) 60%, transparent);
+            animation: spin 3s linear infinite;
+            opacity: .6;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .brand-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--c);
+            letter-spacing: 2px;
+        }
+
+        .brand-chain {
+            font-size: .6rem;
+            color: var(--tm);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .net-pill {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--bd);
+            border-radius: 999px;
+            padding: 7px 14px;
+            font-size: .65rem;
+            color: var(--c);
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: .5px;
+        }
+
+        .ndot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--c);
+            box-shadow: 0 0 7px var(--c);
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .25;
+            }
+        }
+
+        /* BUTTONS */
+        .btn {
+            border: 1px solid var(--cg);
+            border-radius: var(--r);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: .82rem;
+            letter-spacing: .5px;
+            cursor: pointer;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all .2s;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 12px 22px;
+            background: rgba(212, 175, 55, 0.06);
+            color: var(--c);
+            text-transform: uppercase;
+        }
+
+        .btn:hover:not(:disabled) {
+            border-color: var(--c);
+            box-shadow: 0 0 24px rgba(212, 175, 55, 0.25);
+            transform: translateY(-1px);
+            background: rgba(212, 175, 55, 0.12);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(.97);
+        }
+
+        .btn:disabled {
+            opacity: .35;
+            cursor: not-allowed;
+        }
+
+        .btn-s {
+            background: var(--grad-gold);
+            color: #0a0a0f;
+            border-color: var(--c);
+            font-weight: 700;
+            box-shadow: 0 0 24px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-s:hover:not(:disabled) {
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .btnmax {
+            background: transparent;
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--c);
+            cursor: pointer;
+            transition: all .2s;
+            flex-shrink: 0;
+        }
+
+        .btnmax:hover {
+            border-color: var(--c);
+            background: rgba(212, 175, 55, 0.1);
+        }
+
+        #connectBtn {
+            min-width: 158px;
+        }
+
+        /* INPUT — white bg, dark text for contrast */
+        .ig {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 2px solid var(--c);
+            border-radius: var(--r);
+            padding: 4px 6px 4px 14px;
+            transition: all .2s;
+            position: relative;
+        }
+
+        .ig:focus-within {
+            border-color: var(--cp);
+            box-shadow: 0 0 0 3px rgba(197, 160, 40, 0.2);
+        }
+
+        .ci {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #1a1a2e;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            flex: 1;
+            min-width: 80px;
+            padding: 11px 0;
+            caret-color: var(--c);
+        }
+
+        .ci::placeholder {
+            color: #9ca3af;
+            font-size: .85rem;
+            font-weight: 400;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .sh {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .sh-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--bs), transparent);
+        }
+
+        .sh-t {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: var(--c);
+            white-space: nowrap;
+        }
+
+        .inp-lbl {
+            font-size: .62rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--c);
+            margin-bottom: 7px;
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--bd);
+        }
+
+        .sr:last-child {
+            border-bottom: none;
+        }
+
+        .sl {
+            font-size: .7rem;
+            color: var(--tm);
+            font-weight: 500;
+        }
+
+        .sl i {
+            margin-right: 6px;
+            opacity: .7;
+        }
+
+        .sv-big {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.55rem;
+            font-weight: 700;
+            color: var(--c);
+            line-height: 1;
+        }
+
+        .sv-med {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .88rem;
+            font-weight: 700;
+            color: var(--c);
+        }
+
+        .sv-sm {
+            font-size: .8rem;
+            color: var(--tm);
+            font-weight: 500;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border-radius: 7px;
+            padding: 4px 10px;
+            font-size: .65rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .chip-ok {
+            background: rgba(212, 175, 55, 0.12);
+            color: var(--c);
+            border: 1px solid var(--cg);
+        }
+
+        .chip-no {
+            background: rgba(255, 85, 85, 0.1);
+            color: #ff7777;
+            border: 1px solid rgba(255, 85, 85, 0.25);
+        }
+
+        .lbadge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--bd);
+            border-radius: 8px;
+            padding: 5px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .68rem;
+            font-weight: 700;
+            color: var(--c);
+        }
+
+        .balbar {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .balbar-lbl {
+            font-size: .68rem;
+            color: var(--tm);
+            font-weight: 500;
+        }
+
+        .balbar-val {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .98rem;
+            font-weight: 700;
+            color: var(--c);
+        }
+
+        .apyblock {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .apyblock::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), transparent 60%);
+        }
+
+        .apy-lbl {
+            font-size: .62rem;
+            color: var(--tm);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .apy-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.3rem;
+            font-weight: 700;
+            color: var(--c);
+            line-height: 1;
+        }
+
+        .apy-sub {
+            font-size: .58rem;
+            color: var(--td);
+            margin-top: 4px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .pgrid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .pcell {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            padding: 14px;
+            transition: border-color .2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pcell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.3), transparent);
+        }
+
+        .pcell:hover {
+            border-color: var(--bs);
+        }
+
+        .pc-ico {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(212, 175, 55, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .72rem;
+            color: var(--c);
+            margin-bottom: 10px;
+        }
+
+        .pc-num {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .92rem;
+            font-weight: 700;
+            color: var(--c);
+            margin-bottom: 3px;
+        }
+
+        .pc-lbl {
+            font-size: .6rem;
+            color: var(--tm);
+            font-weight: 500;
+        }
+
+        .dv {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--c), transparent);
+            margin: 18px 0;
+        }
+
+        .hint {
+            display: flex;
+            gap: 8px;
+            align-items: flex-start;
+            background: rgba(212, 175, 55, 0.03);
+            border: 1px solid var(--bd);
+            border-left: 3px solid var(--c);
+            border-radius: 0 var(--r) var(--r) 0;
+            padding: 9px 12px;
+            font-size: .68rem;
+            color: var(--tm);
+            line-height: 1.5;
+            margin-top: 6px;
+        }
+
+        .hint i {
+            color: var(--c);
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .arow {
+            display: flex;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .arow .btn {
+            flex: 1;
+            font-size: .72rem;
+            padding: 12px 8px;
+        }
+
+        .mg {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+
+        @media(min-width:820px) {
+            .mg {
+                grid-template-columns: 1fr 1fr;
+                gap: 18px;
+            }
+        }
+
+        /* ACTIVITY */
+        .alist {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 2px;
+        }
+
+        .alist::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .alist::-webkit-scrollbar-track {
+            background: var(--s2);
+        }
+
+        .alist::-webkit-scrollbar-thumb {
+            background: var(--c);
+            border-radius: 999px;
+        }
+
+        .aitem {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            padding: 12px 14px;
+            transition: border-color .2s;
+        }
+
+        .aitem:hover {
+            border-color: var(--bs);
+        }
+
+        .aico {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .9rem;
+            flex-shrink: 0;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--bd);
+            color: var(--c);
+        }
+
+        .ainf {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .atop {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            font-size: .8rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .abot {
+            font-size: .63rem;
+            color: var(--tm);
+            margin-top: 3px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .atime {
+            font-size: .6rem;
+            color: var(--c);
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--bd);
+            border-radius: 5px;
+            padding: 2px 8px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 38px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .empty-ico {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: var(--td);
+        }
+
+        .empty h3 {
+            font-size: .85rem;
+            font-weight: 600;
+            color: var(--tm);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .empty p {
+            font-size: .7rem;
+            color: var(--td);
+            max-width: 220px;
+        }
+
+        /* NOTIFICATION */
+        .no {
+            position: fixed;
+            inset: 0;
+            background: rgba(10, 10, 15, 0.96);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity .3s, visibility .3s;
+            padding: 20px;
+        }
+
+        .no.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .nc {
+            width: 100%;
+            max-width: 370px;
+            background: var(--s1);
+            border: 1px solid var(--bs);
+            border-radius: var(--r3);
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            animation: npop .4s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes npop {
+            from {
+                opacity: 0;
+                transform: scale(.92);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .nc::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--grad-gold);
+        }
+
+        .nglow {
+            position: absolute;
+            top: -110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: .45;
+        }
+
+        .ni {
+            width: 68px;
+            height: 68px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 1.75rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ntitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--c);
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .nmsg {
+            font-size: .85rem;
+            color: var(--tm);
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .ntx {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r);
+            padding: 11px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .nhash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: .73rem;
+            color: var(--tm);
+            flex: 1;
+            text-align: left;
+        }
+
+        .nview {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--cg);
+            color: var(--c);
+            border-radius: 7px;
+            padding: 5px 12px;
+            font-size: .65rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all .2s;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .nview:hover {
+            border-color: var(--c);
+            background: rgba(212, 175, 55, 0.2);
+        }
+
+        .nclose {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            color: var(--tm);
+            border-radius: var(--r);
+            padding: 10px 30px;
+            font-size: .76rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: all .2s;
+            text-transform: uppercase;
+        }
+
+        .nclose:hover {
+            border-color: var(--c);
+            color: var(--c);
+        }
+
+        /* FAQ */
+        .faq-item {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            overflow: hidden;
+            transition: border-color .2s;
+            margin-bottom: 8px;
+        }
+
+        .faq-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .faq-item:hover {
+            border-color: var(--bs);
+        }
+
+        .faq-q {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 18px;
+            cursor: pointer;
+            gap: 12px;
+            user-select: none;
+        }
+
+        .faq-qt {
+            font-size: .84rem;
+            font-weight: 600;
+            color: var(--text);
+            flex: 1;
+        }
+
+        .faq-ic {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 1px solid var(--bd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .58rem;
+            color: var(--tm);
+            flex-shrink: 0;
+            transition: all .3s;
+        }
+
+        .faq-item.open .faq-ic {
+            border-color: var(--c);
+            color: var(--c);
+            background: rgba(212, 175, 55, 0.1);
+            transform: rotate(180deg);
+        }
+
+        .faq-a {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .32s ease;
+        }
+
+        .faq-a-in {
+            font-size: .78rem;
+            color: var(--tm);
+            line-height: 1.7;
+            border-top: 1px solid var(--bd);
+            padding: 14px 18px;
+        }
+
+        .faq-item.open .faq-a {
+            max-height: 260px;
+        }
+
+        /* FOOTER */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 20px 4px 0;
+            border-top: 1px solid var(--bd);
+            font-size: .65rem;
+            color: var(--td);
+        }
+
+        .flinks {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .flinks a {
+            color: var(--tm);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color .2s;
+        }
+
+        .flinks a:hover {
+            color: var(--c);
+        }
+
+        /* RESPONSIVE */
+        @media(max-width:480px) {
+            .wrap {
+                padding: 10px 10px 50px;
+            }
+
+            .card {
+                padding: 16px 14px;
+                border-radius: 20px;
+            }
+
+            .header {
+                padding: 14px 16px;
+            }
+
+            .brand-name {
+                font-size: 1.1rem;
+            }
+
+            .net-pill {
+                display: none;
+            }
+
+            #connectBtn {
+                min-width: 126px;
+                font-size: .74rem;
+                padding: 10px 14px;
+            }
+
+            .pgrid {
+                gap: 8px;
+            }
+
+            .pcell {
+                padding: 12px;
+            }
+
+            .apy-num {
+                font-size: 1.85rem;
+            }
+
+            .sv-big {
+                font-size: 1.25rem;
+            }
+
+            .arow .btn {
+                font-size: .68rem;
+                padding: 11px 6px;
+            }
+
+            .footer {
+                font-size: .6rem;
+            }
+        }
+
+        @media(max-width:360px) {
+            .brand-name {
+                font-size: .95rem;
+                letter-spacing: 1px;
+            }
+
+            .apy-num {
+                font-size: 1.55rem;
+            }
+
+            #connectBtn {
+                min-width: 108px;
+                font-size: .68rem;
+                padding: 8px 10px;
+            }
+
+            .sv-big {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* CALCULATOR */
+        .calc-card {
+            background: var(--s2);
+            border: 1px solid var(--bd);
+            border-radius: var(--r2);
+            margin-top: 14px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .calc-header {
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.06), rgba(197, 160, 40, 0.06));
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--bd);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .calc-header i {
+            color: var(--c);
+            font-size: 1rem;
+        }
+
+        .calc-header h4 {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--c);
+            margin: 0;
+            flex: 1;
+        }
+
+        .calc-apy-badge {
+            background: rgba(212, 175, 55, 0.12);
+            border: 1px solid var(--c);
+            border-radius: 20px;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--c);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .calc-body {
+            padding: 18px;
+        }
+
+        .calc-input-group {
+            margin-bottom: 20px;
+        }
+
+        .calc-input-group label {
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--c);
+            margin-bottom: 7px;
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .calc-input-group label i {
+            margin-right: 5px;
+        }
+
+        .calc-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 2px solid var(--c);
+            border-radius: var(--r);
+            padding: 4px 6px 4px 14px;
+            transition: all .2s;
+            position: relative;
+        }
+
+        .calc-input-wrapper:focus-within {
+            border-color: var(--cp);
+            box-shadow: 0 0 0 3px rgba(197, 160, 40, 0.2);
+        }
+
+        .calc-input-wrapper input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #1a1a2e;
+            font-size: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 500;
+            flex: 1;
+            min-width: 80px;
+            padding: 11px 0;
+            caret-color: var(--c);
+        }
+
+        .calc-input-wrapper input::placeholder {
+            color: #9ca3af;
+            font-size: .85rem;
+            font-weight: 400;
+        }
+
+        .calc-input-wrapper span {
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+
+        .calc-period-item {
+            background: var(--s1);
+            border: 1px solid var(--bd);
+            border-radius: var(--r);
+            padding: 12px 8px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .calc-period-item:hover {
+            border-color: var(--c);
+            background: rgba(212, 175, 55, 0.04);
+        }
+
+        .calc-period-label {
+            font-size: 0.6rem;
+            color: var(--tm);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .calc-period-label i {
+            margin-right: 4px;
+            color: var(--c);
+        }
+
+        .calc-period-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--c);
+        }
+
+        .calc-period-value.highlight {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .calc-note {
+            font-size: 0.6rem;
+            color: var(--td);
+            text-align: center;
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid var(--bd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .calc-note i {
+            color: var(--c);
+        }
+
+        @media(max-width:480px) {
+            .calc-body {
+                padding: 14px;
+            }
+
+            .calc-input-wrapper input {
+                font-size: 0.85rem;
+                padding: 9px 0;
+            }
+
+            .calc-period-value {
+                font-size: 0.75rem;
+            }
+
+            .calc-period-value.highlight {
+                font-size: 0.85rem;
+            }
+
+            .calc-grid {
+                gap: 8px;
+            }
+
+            .calc-period-item {
+                padding: 10px 5px;
+            }
+        }
+
+        /* ============================================================
+       HERO BANNER — responsive
+       ============================================================ */
+        .hero-banner {
+            transition: all 0.3s;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.4rem;
+        }
+
+        .hero-banner .btn-hero {
+            padding: 14px 32px;
+            font-size: .85rem;
+        }
+
+        @media(max-width:768px) {
+            .hero-banner h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero-banner .btn-hero {
+                padding: 12px 20px;
+                font-size: .75rem;
+            }
+
+            .hero-banner .hero-content {
+                padding: 30px 20px !important;
+            }
+        }
+
+        @media(max-width:480px) {
+            .hero-banner h1 {
+                font-size: 1.4rem;
+            }
+
+            .hero-banner p {
+                font-size: .85rem;
+            }
+
+            .hero-banner .hero-content {
+                padding: 24px 16px !important;
+            }
+
+            .hero-banner .hero-wrapper {
+                min-height: 220px !important;
+            }
+
+            .hero-banner .hero-image {
+                min-height: 220px !important;
+            }
+
+            .hero-banner .hero-stats {
+                gap: 16px;
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="wrap">
+
+        <!-- ============================================================
+    HEADER
+    ============================================================ -->
+        <div class="card header">
+            <div class="cc tl"></div>
+            <div class="cc tr"></div>
+            <div class="cc bl"></div>
+            <div class="cc br"></div>
+            <div class="brand">
+                <div class="logo-frame">
+                    <div class="logo-ring"></div>
+                    <img src="https://raw.githubusercontent.com/stakingreceh/stakingreceh.github.io/refs/heads/main/images/favicon.png"
+                        alt="RECEH Token — Logo Staking" loading="lazy">
+                </div>
+                <div>
+                    <div class="brand-name">RECEH STAKING</div>
+                    <div class="brand-chain">Stake RECEH Earn RECEH</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div class="net-pill"><span class="ndot"></span>BNB Smart Chain&nbsp;·&nbsp;#56</div>
+                <button class="btn btn-s" id="connectBtn"><i class="fas fa-plug"></i>&nbsp;Connect</button>
+            </div>
+        </div>
+
+        <!-- ============================================================
+    HERO BANNER — dengan gambar & CTA
+    ============================================================ -->
+        <div class="card hero-banner" style="padding:0;overflow:hidden;border-radius:var(--r3);">
+            <div class="hero-wrapper"
+                style="position:relative;width:100%;min-height:280px;display:flex;align-items:center;background:var(--s1);">
+
+                <!-- GAMBAR BANNER -->
+                <img class="hero-image"
+                    src="https://raw.githubusercontent.com/stakingreceh/stakingreceh.github.io/refs/heads/main/images/staking-receh.png"
+                    alt="RECEH Staking Banner — Stake RECEH Earn RECEH di BSC" loading="eager"
+                    style="width:100%;height:100%;min-height:280px;object-fit:cover;position:absolute;inset:0;display:block;"
+                    onerror="this.style.display='none'">
+
+                <!-- OVERLAY GRADIENT (agar teks terbaca) -->
+                <div
+                    style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(5,5,11,0.85) 0%,rgba(5,5,11,0.4) 60%,rgba(5,5,11,0.2) 100%);pointer-events:none;">
+                </div>
+
+                <!-- KONTEN DI ATAS GAMBAR -->
+                <div class="hero-content" style="position:relative;z-index:2;padding:40px 36px;max-width:680px;">
+                    <div
+                        style="display:inline-flex;align-items:center;gap:8px;background:rgba(212,175,55,0.15);border:1px solid var(--c);border-radius:999px;padding:6px 16px;margin-bottom:16px;">
+                        <span class="ndot" style="width:8px;height:8px;background:var(--c);"></span>
+                        <span
+                            style="font-size:.65rem;font-weight:600;color:var(--c);letter-spacing:2px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;">BNB
+                            Smart Chain · Live</span>
+                    </div>
+
+                    <h1
+                        style="font-weight:700;color:var(--text);line-height:1.1;margin-bottom:12px;font-family:'Space Grotesk',sans-serif;">
+                        Stake RECEH <br>
+                        <span style="color:var(--c);">Earn 20% APY</span>
+                    </h1>
+
+                    <p style="font-size:1rem;color:var(--tm);line-height:1.6;max-width:520px;margin-bottom:20px;">
+                        Dapatkan penghasilan pasif dengan staking token RECEH di BNB Smart Chain.
+                        Reward dihitung <strong style="color:var(--c);">setiap detik</strong> — withdraw kapan saja
+                        setelah 30 hari lock.
+                    </p>
+
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                        <button class="btn btn-s btn-hero" onclick="document.getElementById('connectBtn').click();"
+                            style="padding:14px 32px;font-size:.85rem;">
+                            <i class="fas fa-rocket"></i> Mulai Staking
+                        </button>
+                        <a href="#panduan"
+                            style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border:1px solid var(--bd);border-radius:var(--r);color:var(--tm);text-decoration:none;font-weight:600;font-size:.85rem;transition:all .2s;"
+                            onmouseover="this.style.borderColor='var(--c)';this.style.color='var(--c)'"
+                            onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--tm)'">
+                            <i class="fas fa-book-open"></i> Pelajari
+                        </a>
+                    </div>
+
+                    <!-- STATS MINI -->
+                    <div class="hero-stats"
+                        style="display:flex;gap:28px;margin-top:24px;padding-top:20px;border-top:1px solid rgba(212,175,55,0.15);">
+                        <div>
+                            <div style="font-size:.6rem;color:var(--td);text-transform:uppercase;letter-spacing:1.5px;">
+                                APY</div>
+                            <div
+                                style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--c);">
+                                20%</div>
+                        </div>
+                        <div>
+                            <div style="font-size:.6rem;color:var(--td);text-transform:uppercase;letter-spacing:1.5px;">
+                                Lock Period</div>
+                            <div
+                                style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--c);">
+                                30 Days</div>
+                        </div>
+                        <div>
+                            <div style="font-size:.6rem;color:var(--td);text-transform:uppercase;letter-spacing:1.5px;">
+                                Network</div>
+                            <div
+                                style="font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--c);">
+                                BSC</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DECORATIVE CORNER GOLD -->
+                <div
+                    style="position:absolute;bottom:0;right:0;width:120px;height:120px;background:radial-gradient(circle at bottom right,rgba(212,175,55,0.08),transparent 70%);pointer-events:none;">
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================
+    MAIN GRID
+    ============================================================ -->
+        <div class="mg">
+
+            <!-- ===== LEFT COLUMN ===== -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+
+                <!-- MY STAKE -->
+                <div class="card">
+                    <div class="cc tl"></div>
+                    <div class="cc br"></div>
+                    <div class="sh">
+                        <div class="sh-t">My Staking</div>
+                        <div class="sh-line"></div>
+                        <span id="lockTimer" class="lbadge"><i class="fas fa-lock"
+                                style="font-size:.58rem;"></i>&nbsp;--</span>
+                    </div>
+                    <div class="sr">
+                        <div>
+                            <div class="sl"><i class="fas fa-coins"></i>Total Staked</div>
+                            <div class="sv-big" id="stakedAmount">0.00</div>
+                            <div
+                                style="font-size:.58rem;color:var(--td);margin-top:3px;font-family:'JetBrains Mono',monospace;">
+                                RECEH TOKEN</div>
+                        </div>
+                    </div>
+                    <div class="sr">
+                        <div>
+                            <div class="sl"><i class="fas fa-gift"></i>Rewards Available</div>
+                            <div class="sv-big" id="pendingReward">0.00</div>
+                            <div
+                                style="font-size:.58rem;color:var(--td);margin-top:3px;font-family:'JetBrains Mono',monospace;">
+                                RECEH TOKEN</div>
+                        </div>
+                    </div>
+                    <div class="sr">
+                        <span class="sl"><i class="fas fa-clock"></i>Lock Ends</span>
+                        <span class="sv-sm" id="lockEnds">-</span>
+                    </div>
+                    <div class="sr">
+                        <span class="sl"><i class="fas fa-unlock-alt"></i>Withdrawal Status</span>
+                        <span id="canUnstakeStatus" class="chip chip-no">❌ Locked</span>
+                    </div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="card">
+                    <div class="cc tl"></div>
+                    <div class="cc br"></div>
+                    <div class="sh">
+                        <div class="sh-t">Actions</div>
+                        <div class="sh-line"></div>
+                    </div>
+
+                    <div class="balbar">
+                        <div class="balbar-lbl"><i class="fas fa-wallet" style="margin-right:5px;"></i>Wallet Balance
+                        </div>
+                        <div class="balbar-val"><span id="walletBalance">0.00</span>&nbsp;RECEH</div>
+                    </div>
+
+                    <!-- STAKE -->
+                    <div style="margin-bottom:14px;">
+                        <span class="inp-lbl"><i class="fas fa-arrow-down" style="margin-right:4px;"></i>Stake
+                            Amount</span>
+                        <div class="ig">
+                            <input type="number" id="stakeAmount" placeholder="Enter RECEH amount..." class="ci" min="0"
+                                step="any" autocomplete="off">
+                            <button class="btnmax" id="stakeMaxBtn">MAX</button>
+                        </div>
+                        <div class="hint"><i class="fas fa-circle-info"></i>Tokens are locked for 30 days. Rewards are
+                            calculated automatically every second.</div>
+                    </div>
+                    <button class="btn btn-s" id="stakeBtn" style="width:100%;padding:14px;"><i
+                            class="fas fa-arrow-down-to-line"></i>&nbsp;Stake Now</button>
+
+                    <div class="dv"></div>
+
+                    <!-- WITHDRAW -->
+                    <div style="margin-bottom:14px;">
+                        <span class="inp-lbl"><i class="fas fa-arrow-up" style="margin-right:4px;"></i>Withdraw
+                            Amount</span>
+                        <div class="ig">
+                            <input type="number" id="withdrawAmount" placeholder="Enter RECEH amount..." class="ci"
+                                min="0" step="any" autocomplete="off">
+                            <button class="btnmax" id="withdrawMaxBtn">MAX</button>
+                        </div>
+                        <div class="hint"><i class="fas fa-circle-info"></i>Withdrawal is only available after the
+                            30-day lock period ends.</div>
+                    </div>
+                    <button class="btn" id="withdrawBtn" style="width:100%;padding:14px;"><i
+                            class="fas fa-arrow-up-from-bracket"></i>&nbsp;Withdraw Tokens</button>
+
+                    <div class="arow">
+                        <button class="btn" id="extendLockBtn"><i class="fas fa-rotate-right"></i>&nbsp;Extend
+                            Lock</button>
+                        <button class="btn btn-s" id="claimBtn"><i class="fas fa-gift"></i>&nbsp;Claim Reward</button>
+                    </div>
+                </div>
+
+            </div><!-- /left -->
+
+            <!-- ===== RIGHT COLUMN ===== -->
+            <div style="display:flex;flex-direction:column;gap:14px;">
+
+                <!-- POOL STATISTICS -->
+                <div class="card">
+                    <div class="cc tl"></div>
+                    <div class="cc br"></div>
+                    <div class="sh">
+                        <div class="sh-t">Pool Statistics</div>
+                        <div class="sh-line"></div>
+                    </div>
+                    <div class="apyblock">
+                        <div>
+                            <div class="apy-lbl">APY · Annual Percentage Yield</div>
+                            <div class="apy-num" id="apy">0%</div>
+                            <div class="apy-sub">Calculated Automatically Per Second</div>
+                        </div>
+                        <i class="fas fa-chart-line" style="font-size:2rem;color:var(--c);opacity:.12;"></i>
+                    </div>
+                    <div class="pgrid">
+                        <div class="pcell">
+                            <div class="pc-ico"><i class="fas fa-layer-group"></i></div>
+                            <div class="pc-num" id="totalStaked">0</div>
+                            <div class="pc-lbl">Total Staked</div>
+                        </div>
+                        <div class="pcell">
+                            <div class="pc-ico"><i class="fas fa-clock"></i></div>
+                            <div class="pc-num" id="lockDuration">30 days</div>
+                            <div class="pc-lbl">Lock Duration</div>
+                        </div>
+                        <div class="pcell">
+                            <div class="pc-ico"><i class="fas fa-hand-holding-dollar"></i></div>
+                            <div class="pc-num" id="unclaimedRewards">0</div>
+                            <div class="pc-lbl">Unclaimed Rewards</div>
+                        </div>
+                        <div class="pcell">
+                            <div class="pc-ico"><i class="fas fa-vault"></i></div>
+                            <div class="pc-num" id="contractBalance">0</div>
+                            <div class="pc-lbl">Reward Pool Balance</div>
+                        </div>
+                    </div>
+                    <div class="sr" style="margin-top:12px;">
+                        <span class="sl"><i class="fas fa-gauge-high"></i>Reward Rate</span>
+                        <span class="sv-med" id="rewardRate">0/sec</span>
+                    </div>
+                </div>
+
+                <!-- ACTIVITY -->
+                <div class="card">
+                    <div class="cc tl"></div>
+                    <div class="cc br"></div>
+                    <div class="sh" style="margin-bottom:14px;">
+                        <div class="sh-t">Recent Activity</div>
+                        <div class="sh-line"></div>
+                        <span id="activityCount"
+                            style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--td);white-space:nowrap;">0
+                            transactions</span>
+                    </div>
+                    <div id="activityContainer">
+                        <div class="empty">
+                            <div class="empty-ico"><i class="fas fa-plug"></i></div>
+                            <h3>Not Connected</h3>
+                            <p>Connect your wallet to view transaction history</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STAKING CALCULATOR -->
+                <div class="calc-card">
+                    <div class="calc-header">
+                        <i class="fas fa-calculator"></i>
+                        <h4>STAKING CALCULATOR</h4>
+                        <span class="calc-apy-badge"><i class="fas fa-chart-line"></i> APY 20%</span>
+                    </div>
+                    <div class="calc-body">
+                        <div class="calc-input-group">
+                            <label><i class="fas fa-coins"></i> RECEH AMOUNT</label>
+                            <div class="calc-input-wrapper">
+                                <input type="number" id="calcStakeAmount" placeholder="Enter RECEH amount..."
+                                    value="100" step="any" min="0">
+                                <span>RECEH</span>
+                            </div>
+                        </div>
+                        <div class="calc-grid">
+                            <div class="calc-period-item">
+                                <div class="calc-period-label"><i class="fas fa-sun"></i> 1 DAY</div>
+                                <div class="calc-period-value" id="calcDay1">0.00 RECEH</div>
+                            </div>
+                            <div class="calc-period-item">
+                                <div class="calc-period-label"><i class="fas fa-calendar-week"></i> 1 WEEK</div>
+                                <div class="calc-period-value" id="calcWeek1">0.00 RECEH</div>
+                            </div>
+                            <div class="calc-period-item">
+                                <div class="calc-period-label"><i class="fas fa-calendar-alt"></i> 1 MONTH</div>
+                                <div class="calc-period-value highlight" id="calcMonth1">0.00 RECEH</div>
+                            </div>
+                            <div class="calc-period-item">
+                                <div class="calc-period-label"><i class="fas fa-calendar-plus"></i> 1 YEAR</div>
+                                <div class="calc-period-value" id="calcYear1">0.00 RECEH</div>
+                            </div>
+                        </div>
+                        <div class="calc-note">
+                            <i class="fas fa-circle-info"></i>
+                            <span>Simple interest calculation per second at 20% APY</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /right -->
+        </div><!-- /mg -->
+
+        <!-- ============================================================
+    ARTIKEL PANDUAN STAKING — KONTEN PANJANG UNTUK SEO & EDUKASI
+    ============================================================ -->
+        <div class="card" id="panduan">
+            <div class="cc tl"></div>
+            <div class="cc br"></div>
+            <div class="sh">
+                <div class="sh-t">📖 Panduan Lengkap Staking RECEH di BSC</div>
+                <div class="sh-line"></div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:24px;">
+
+                <!-- ===== BAGIAN 1: APA ITU ===== -->
+                <div style="background:var(--s2);border-radius:var(--r2);padding:20px;border:1px solid var(--bd);">
+                    <h2
+                        style="font-size:1.1rem;font-weight:700;color:var(--c);font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-rocket" style="color:var(--c);"></i> Apa Itu RECEH Staking?
+                    </h2>
+                    <p style="color:var(--tm);line-height:1.8;font-size:.88rem;margin-bottom:12px;">
+                        <strong style="color:var(--c);">RECEH Staking</strong> adalah program <strong
+                            style="color:var(--c);">DeFi (Decentralized Finance)</strong> yang memungkinkan Anda
+                        mengunci token <strong style="color:var(--c);">RECEH</strong> di dalam <strong
+                            style="color:var(--c);">smart contract</strong> dan mendapatkan <strong
+                            style="color:var(--c);">reward pasif</strong> secara otomatis setiap detik. Program ini
+                        berjalan di <strong style="color:var(--c);">BNB Smart Chain (BSC)</strong> — jaringan blockchain
+                        dengan biaya transaksi rendah dan kecepatan tinggi.
+                    </p>
+                    <p style="color:var(--tm);line-height:1.8;font-size:.88rem;">
+                        Dengan APY (Annual Percentage Yield) sebesar <strong style="color:var(--c);">20%</strong>,
+                        setiap token RECEH yang Anda stake akan menghasilkan reward secara <strong
+                            style="color:var(--c);">continuous compounding</strong>. Sistem ini dirancang untuk
+                        mendorong partisipasi jangka panjang dan memberikan nilai tambah bagi para pemegang token RECEH.
+                    </p>
+                </div>
+
+                <!-- ===== BAGIAN 2: CARA KERJA ===== -->
+                <div style="background:var(--s2);border-radius:var(--r2);padding:20px;border:1px solid var(--bd);">
+                    <h2
+                        style="font-size:1.1rem;font-weight:700;color:var(--c);font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-cogs" style="color:var(--c);"></i> Bagaimana Cara Kerja Staking?
+                    </h2>
+                    <div style="display:grid;grid-template-columns:1fr;gap:14px;">
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--c);">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                                <span
+                                    style="background:var(--c);color:#0a0a0f;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">1</span>
+                                <strong style="color:var(--c);font-size:.9rem;">Hubungkan Wallet</strong>
+                            </div>
+                            <p style="color:var(--tm);font-size:.8rem;line-height:1.6;margin-left:36px;">
+                                Gunakan MetaMask, Bitget Wallet, atau wallet lain yang kompatibel dengan BSC. Pastikan
+                                Anda memiliki token RECEH dan cukup BNB untuk biaya transaksi (gas fee).
+                            </p>
+                        </div>
+
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--c);">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                                <span
+                                    style="background:var(--c);color:#0a0a0f;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">2</span>
+                                <strong style="color:var(--c);font-size:.9rem;">Masukkan Jumlah RECEH</strong>
+                            </div>
+                            <p style="color:var(--tm);font-size:.8rem;line-height:1.6;margin-left:36px;">
+                                Isi kolom "Stake Amount" dengan jumlah token yang ingin Anda stake. Anda juga bisa
+                                menekan tombol <strong style="color:var(--c);">MAX</strong> untuk langsung memasukkan
+                                seluruh saldo wallet.
+                            </p>
+                        </div>
+
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--c);">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                                <span
+                                    style="background:var(--c);color:#0a0a0f;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">3</span>
+                                <strong style="color:var(--c);font-size:.9rem;">Konfirmasi & Stake</strong>
+                            </div>
+                            <p style="color:var(--tm);font-size:.8rem;line-height:1.6;margin-left:36px;">
+                                Klik tombol <strong style="color:var(--c);">"Stake Now"</strong> dan konfirmasi
+                                transaksi di wallet Anda. Setelah transaksi berhasil, token Anda akan terkunci selama
+                                <strong style="color:var(--c);">30 hari</strong> dan reward akan mulai bertambah secara
+                                otomatis.
+                            </p>
+                        </div>
+
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px 16px;border-left:3px solid var(--c);">
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+                                <span
+                                    style="background:var(--c);color:#0a0a0f;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;">4</span>
+                                <strong style="color:var(--c);font-size:.9rem;">Pantau & Klaim Reward</strong>
+                            </div>
+                            <p style="color:var(--tm);font-size:.8rem;line-height:1.6;margin-left:36px;">
+                                Dashboard akan menampilkan <strong style="color:var(--c);">Total Staked</strong>,
+                                <strong style="color:var(--c);">Pending Reward</strong>, dan sisa waktu lock. Reward
+                                dapat diklaim kapan saja dengan tombol <strong style="color:var(--c);">"Claim
+                                    Reward"</strong> — tanpa harus menunggu lock berakhir.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== BAGIAN 3: KEUNTUNGAN ===== -->
+                <div style="background:var(--s2);border-radius:var(--r2);padding:20px;border:1px solid var(--bd);">
+                    <h2
+                        style="font-size:1.1rem;font-weight:700;color:var(--c);font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-star" style="color:var(--c);"></i> Keuntungan Staking RECEH
+                    </h2>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bd);">
+                            <div style="font-size:1.8rem;margin-bottom:6px;">💰</div>
+                            <strong style="color:var(--c);display:block;font-size:.85rem;">APY 20%</strong>
+                            <p style="color:var(--td);font-size:.7rem;line-height:1.4;margin-top:4px;">Hasil tahunan
+                                yang kompetitif dengan reward per detik.</p>
+                        </div>
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bd);">
+                            <div style="font-size:1.8rem;margin-bottom:6px;">⚡</div>
+                            <strong style="color:var(--c);display:block;font-size:.85rem;">Auto Compound</strong>
+                            <p style="color:var(--td);font-size:.7rem;line-height:1.4;margin-top:4px;">Reward dihitung
+                                setiap detik tanpa perlu tindakan manual.</p>
+                        </div>
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bd);">
+                            <div style="font-size:1.8rem;margin-bottom:6px;">🔒</div>
+                            <strong style="color:var(--c);display:block;font-size:.85rem;">Smart Contract Aman</strong>
+                            <p style="color:var(--td);font-size:.7rem;line-height:1.4;margin-top:4px;">Dibangun dengan
+                                OpenZeppelin ReentrancyGuard & SafeERC20.</p>
+                        </div>
+                        <div
+                            style="background:var(--s1);border-radius:var(--r);padding:14px;text-align:center;border:1px solid var(--bd);">
+                            <div style="font-size:1.8rem;margin-bottom:6px;">🔄</div>
+                            <strong style="color:var(--c);display:block;font-size:.85rem;">Fleksibel</strong>
+                            <p style="color:var(--td);font-size:.7rem;line-height:1.4;margin-top:4px;">Klaim reward
+                                kapan saja tanpa menunggu masa lock berakhir.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== BAGIAN 4: PANDUAN PENGGUNAAN ===== -->
+                <div style="background:var(--s2);border-radius:var(--r2);padding:20px;border:1px solid var(--bd);">
+                    <h2
+                        style="font-size:1.1rem;font-weight:700;color:var(--c);font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-hand-pointer" style="color:var(--c);"></i> Panduan Penggunaan Halaman Ini
+                    </h2>
+                    <div style="display:flex;flex-direction:column;gap:10px;">
+                        <div
+                            style="display:flex;gap:12px;align-items:flex-start;background:var(--s1);border-radius:var(--r);padding:12px 14px;border-left:2px solid var(--c);">
+                            <span style="color:var(--c);font-size:1.1rem;flex-shrink:0;">①</span>
+                            <div>
+                                <strong style="color:var(--c);font-size:.82rem;">Dashboard My Staking</strong>
+                                <p style="color:var(--tm);font-size:.76rem;line-height:1.5;">Lihat total token yang Anda
+                                    stake, reward yang tersedia, dan status lock. Semua data diperbarui secara real-time
+                                    setiap 60 detik.</p>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;gap:12px;align-items:flex-start;background:var(--s1);border-radius:var(--r);padding:12px 14px;border-left:2px solid var(--c);">
+                            <span style="color:var(--c);font-size:1.1rem;flex-shrink:0;">②</span>
+                            <div>
+                                <strong style="color:var(--c);font-size:.82rem;">Statistik Pool</strong>
+                                <p style="color:var(--tm);font-size:.76rem;line-height:1.5;">Pantau total token yang
+                                    di-stake oleh semua pengguna, total reward yang belum diklaim, dan saldo reward
+                                    pool. Informasi ini membantu Anda melihat likuiditas dan kesehatan ekosistem.</p>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;gap:12px;align-items:flex-start;background:var(--s1);border-radius:var(--r);padding:12px 14px;border-left:2px solid var(--c);">
+                            <span style="color:var(--c);font-size:1.1rem;flex-shrink:0;">③</span>
+                            <div>
+                                <strong style="color:var(--c);font-size:.82rem;">Kalkulator Staking</strong>
+                                <p style="color:var(--tm);font-size:.76rem;line-height:1.5;">Masukkan jumlah RECEH yang
+                                    ingin Anda stake, dan lihat proyeksi reward untuk berbagai periode (1 hari, 1
+                                    minggu, 1 bulan, 1 tahun). Sangat berguna untuk merencanakan strategi staking Anda.
+                                </p>
+                            </div>
+                        </div>
+                        <div
+                            style="display:flex;gap:12px;align-items:flex-start;background:var(--s1);border-radius:var(--r);padding:12px 14px;border-left:2px solid var(--c);">
+                            <span style="color:var(--c);font-size:1.1rem;flex-shrink:0;">④</span>
+                            <div>
+                                <strong style="color:var(--c);font-size:.82rem;">Aktivitas & Riwayat</strong>
+                                <p style="color:var(--tm);font-size:.76rem;line-height:1.5;">Lihat riwayat transaksi
+                                    Anda — stake, withdraw, claim reward, dan extend lock. Setiap transaksi dilengkapi
+                                    dengan timestamp dan link ke BSCScan untuk verifikasi on-chain.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== BAGIAN 5: TIPS ===== -->
+                <div
+                    style="background:var(--s2);border-radius:var(--r2);padding:20px;border:1px solid var(--bd);border-left:4px solid var(--c);">
+                    <h2
+                        style="font-size:1.1rem;font-weight:700;color:var(--c);font-family:'JetBrains Mono',monospace;margin-bottom:12px;display:flex;align-items:center;gap:10px;">
+                        <i class="fas fa-lightbulb" style="color:var(--c);"></i> Tips & Strategi Staking
+                    </h2>
+                    <ul style="list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;">
+                        <li
+                            style="display:flex;gap:10px;align-items:flex-start;color:var(--tm);font-size:.82rem;line-height:1.6;">
+                            <span style="color:var(--c);font-size:1rem;">✓</span>
+                            <span><strong style="color:var(--c);">Stake lebih awal</strong> — semakin cepat Anda stake,
+                                semakin banyak reward yang Anda kumpulkan karena sistem menghitung reward per
+                                detik.</span>
+                        </li>
+                        <li
+                            style="display:flex;gap:10px;align-items:flex-start;color:var(--tm);font-size:.82rem;line-height:1.6;">
+                            <span style="color:var(--c);font-size:1rem;">✓</span>
+                            <span><strong style="color:var(--c);">Gunakan fitur Extend Lock</strong> — jika Anda yakin
+                                ingin staking jangka panjang, extend lock akan mereset timer 30 hari tanpa perlu
+                                withdraw dan re-stake ulang.</span>
+                        </li>
+                        <li
+                            style="display:flex;gap:10px;align-items:flex-start;color:var(--tm);font-size:.82rem;line-height:1.6;">
+                            <span style="color:var(--c);font-size:1rem;">✓</span>
+                            <span><strong style="color:var(--c);">Klaim reward secara berkala</strong> — meskipun reward
+                                tidak hangus, mengklaim secara rutin membantu Anda mengelola portofolio dan memanfaatkan
+                                reward untuk strategi lain.</span>
+                        </li>
+                        <li
+                            style="display:flex;gap:10px;align-items:flex-start;color:var(--tm);font-size:.82rem;line-height:1.6;">
+                            <span style="color:var(--c);font-size:1rem;">✓</span>
+                            <span><strong style="color:var(--c);">Pastikan saldo BNB cukup</strong> — setiap transaksi
+                                on-chain membutuhkan BNB sebagai gas fee. Pastikan wallet Anda memiliki saldo BNB yang
+                                cukup untuk menghindari kegagalan transaksi.</span>
+                        </li>
+                        <li
+                            style="display:flex;gap:10px;align-items:flex-start;color:var(--tm);font-size:.82rem;line-height:1.6;">
+                            <span style="color:var(--c);font-size:1rem;">✓</span>
+                            <span><strong style="color:var(--c);">Gunakan wallet yang aman</strong> — pastikan Anda
+                                menggunakan wallet resmi seperti MetaMask atau Bitget Wallet, dan jangan pernah
+                                membagikan seed phrase Anda kepada siapa pun.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ===== BAGIAN 6: KESIMPULAN ===== -->
+                <div
+                    style="background:linear-gradient(135deg,rgba(212,175,55,0.06),rgba(197,160,40,0.03));border-radius:var(--r2);padding:20px;border:1px solid var(--bd);text-align:center;">
+                    <p style="color:var(--tm);font-size:.88rem;line-height:1.8;max-width:700px;margin:0 auto;">
+                        <strong style="color:var(--c);">RECEH Staking</strong> adalah cara terbaik untuk mendapatkan
+                        <strong style="color:var(--c);">penghasilan pasif</strong> dari token RECEH Anda. Dengan APY
+                        <strong style="color:var(--c);">20%</strong>, sistem yang <strong
+                            style="color:var(--c);">transparan</strong> di blockchain, dan kemudahan klaim reward kapan
+                        saja, program ini dirancang untuk memberikan nilai maksimal bagi komunitas RECEH.
+                    </p>
+                    <p style="color:var(--td);font-size:.78rem;line-height:1.6;margin-top:10px;">
+                        Mulai staking sekarang dan nikmati reward setiap detiknya! 🚀
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============================================================
+    FAQ — KONTEN PANJANG UNTUK SEO & GOOGLE AI
+    ============================================================ -->
+        <div class="card">
+            <div class="cc tl"></div>
+            <div class="cc br"></div>
+            <div class="sh">
+                <div class="sh-t">FAQ · Frequently Asked Questions</div>
+                <div class="sh-line"></div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Apa itu RECEH Staking?</span><span class="faq-ic"><i
+                            class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">RECEH Staking adalah program di mana Anda mengunci token RECEH ke dalam smart
+                        contract yang aman dan mendapat reward secara otomatis setiap detik. Semakin banyak token yang
+                        Anda stake dan semakin lama, semakin besar keuntungan yang Anda peroleh — semua dijalankan di
+                        BNB Smart Chain (BSC) dengan biaya transaksi rendah.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Berapa lama token saya terkunci setelah staking?</span><span
+                        class="faq-ic"><i class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Setelah staking, token Anda terkunci selama <strong style="color:var(--c)">30
+                            hari</strong>. Selama periode ini Anda tidak dapat menarik pokok staking, tetapi reward
+                        terus bertambah dan dapat diklaim kapan saja tanpa menunggu lock berakhir. Sistem ini dirancang
+                        untuk mendorong staking jangka panjang dan stabilitas ekosistem RECEH.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Bagaimana reward saya dihitung?</span><span class="faq-ic"><i
+                            class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Reward dihitung secara proporsional berdasarkan jumlah RECEH yang Anda stake
+                        dibandingkan dengan total pool, dikalikan dengan APY saat ini. Rumus dasarnya: <br><br><span
+                            style="color:var(--c);font-family:'JetBrains Mono',monospace;font-size:.72rem;">Reward/detik
+                            = (Stake Anda ÷ Total Pool) × Reward Rate</span><br><br>Estimasi real-time ditampilkan di
+                        bagian "Pending Reward" pada dashboard Anda, sehingga Anda selalu tahu berapa banyak RECEH yang
+                        akan Anda dapatkan.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Kapan saya bisa menarik token saya?</span><span
+                        class="faq-ic"><i class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Token hanya dapat ditarik setelah periode lock 30 hari berakhir. Status akan
+                        berubah menjadi <strong style="color:var(--c)">"Can Withdraw"</strong> dan tombol Withdraw akan
+                        aktif. Reward dapat diklaim kapan saja tanpa harus menunggu lock berakhir — Anda tidak perlu
+                        menunggu untuk menikmati hasil staking.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Apa fungsi tombol "Extend Lock"?</span><span class="faq-ic"><i
+                            class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Tombol <strong style="color:var(--c)">Extend Lock</strong> berfungsi untuk
+                        mereset periode lock dari sekarang + 30 hari ke depan. Ini berguna jika Anda ingin terus staking
+                        lebih lama tanpa harus menarik dan melakukan staking ulang. Perlu diingat bahwa ini akan mereset
+                        timer lock Anda, jadi gunakan dengan bijak.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Apakah smart contract ini aman?</span><span class="faq-ic"><i
+                            class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Smart contract menggunakan standar OpenZeppelin yang telah teruji, dilengkapi
+                        dengan <strong style="color:var(--c)">ReentrancyGuard</strong> (perlindungan serangan
+                        reentrancy) dan <strong style="color:var(--c)">SafeERC20</strong> untuk transfer token yang
+                        aman. Reward token bersifat immutable — tidak dapat diubah setelah deployment, sehingga tidak
+                        ada risiko perubahan aturan di tengah jalan.</div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Wallet apa saja yang didukung?</span><span class="faq-ic"><i
+                            class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Wallet yang didukung: <strong style="color:var(--c)">MetaMask</strong>,
+                        <strong style="color:var(--c)">Bitget Wallet</strong>, <strong
+                            style="color:var(--c)">WalletConnect</strong>, dan <strong
+                            style="color:var(--c)">TokenPocket</strong>. Jaringan BNB Smart Chain (Chain ID: 56) akan
+                        otomatis ditambahkan saat Anda menghubungkan wallet.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Di mana saya bisa membeli token RECEH?</span><span
+                        class="faq-ic"><i class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Anda dapat membeli RECEH melalui: <a
+                            href="https://cryptoreceh.com/token-sale/" target="_blank"
+                            style="color:var(--c);text-decoration:none;font-weight:600;">Token Sale</a>, atau melalui
+                        mekanisme pembelian lain seperti public sale dan DEX. Pastikan Anda selalu membeli dari sumber
+                        resmi untuk menghindari penipuan.</div>
+                </div>
+            </div>
+
+            <!-- Tambahan FAQ untuk konten lebih panjang -->
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Apakah ada biaya tambahan untuk staking?</span><span
+                        class="faq-ic"><i class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Tidak ada biaya platform untuk staking, namun Anda tetap perlu membayar
+                        <strong style="color:var(--c)">gas fee</strong> transaksi di BNB Smart Chain (BSC) untuk setiap
+                        operasi on-chain: stake, withdraw, claim reward, dan extend lock. Gas fee BSC sangat rendah
+                        dibandingkan Ethereum, sehingga tetap efisien.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item" onclick="toggleFaq(this)">
+                <div class="faq-q"><span class="faq-qt">Apa yang terjadi jika saya tidak mengklaim reward?</span><span
+                        class="faq-ic"><i class="fas fa-chevron-down"></i></span></div>
+                <div class="faq-a">
+                    <div class="faq-a-in">Reward Anda terus bertambah setiap detik selama token Anda masih ter-stake.
+                        Anda bisa mengklaimnya kapan saja, bahkan setelah masa lock berakhir. Tidak ada batasan waktu
+                        untuk mengklaim, sehingga Anda bisa menunggu hingga jumlah reward besar baru diklaim.</div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ============================================================
+    FOOTER
+    ============================================================ -->
+        <div class="footer">
+            <span style="font-family:'JetBrains Mono',monospace;letter-spacing:.5px;">© 2026 RECEH Dev & Github
+                Pages</span>
+            <div class="flinks">
+                <a href="https://cryptoreceh.com/token-sale/" target="_blank"><i class="fas fa-cart-plus"></i>Buy
+                    RECEH</a>
+                <a href="https://t.me/receh_community" target="_blank"><i class="fab fa-telegram"></i>Telegram</a>
+                <a href="https://stakingreceh.github.io/guide/" target="_blank"><i
+                        class="fas fa-book-open"></i>Guide</a>
+                <a href="https://stakingreceh.github.io/terms/" target="_blank"><i
+                        class="fa-solid fa-scale-balanced"></i>Terms</a>
+            </div>
+        </div>
+
+    </div><!-- /wrap -->
+
+    <!-- ============================================================
+  NOTIFICATION
+  ============================================================ -->
+    <div class="no" id="notificationOverlay">
+        <div class="nc">
+            <div class="nglow" id="notifGlow"></div>
+            <div class="ni" id="notifIconWrap"><span id="notificationIcon">✅</span></div>
+            <div class="ntitle" id="notificationTitle">SUCCESS</div>
+            <div class="nmsg" id="notificationMessage">Transaction processed successfully.</div>
+            <div class="ntx" id="notificationTxContainer" style="display:none;">
+                <span class="nhash" id="notificationTxHash"></span>
+                <a class="nview" id="notificationTxLink" href="#" target="_blank"><i
+                        class="fas fa-external-link-alt"></i>&nbsp;View TX</a>
+            </div>
+            <button class="nclose" id="closeNotifyBtn">Close</button>
+        </div>
+    </div>
+
+    <!-- ============================================================
+  JAVASCRIPT — FIXED: getSigner null error
+  ============================================================ -->
+    <script>
+        (function () {
+            "use strict";
+
+            // ============================================================
+            // CONFIGURATION
+            // ============================================================
+            const STAKING_ADDR = "0xc94320525237422185c498BCae62949839B8330f";
+            const TOKEN_ADDR = "0x4c9C431Fa7fD104c0E7230d20E1623E62019A1C5";
+            const CHAIN_ID = 56;
+            const CHAIN_NAME = "BNB Smart Chain";
+            const RPC_URL = "https://bsc-dataseed1.binance.org/";
+            const EXPLORER = "https://bscscan.com/";
+            const CURRENCY = "BNB";
+
+            const STAKING_ABI = [
+                "function stake(uint256 amount) external",
+                "function withdraw(uint256 amount) external",
+                "function extendLock() external",
+                "function claimReward() external",
+                "function earned(address account) view returns (uint256)",
+                "function users(address) view returns (uint256 amount, uint256 lockedUntil, uint256 rewardPerTokenPaid, uint256 rewards)",
+                "function totalStaked() view returns (uint256)",
+                "function apy() view returns (uint256)",
+                "function lockDuration() view returns (uint256)",
+                "function rewardRate() view returns (uint256)",
+                "function totalUnclaimedRewards() view returns (uint256)",
+                "function lockTimeRemaining(address) view returns (uint256)",
+                "function canUnstake(address) view returns (bool)",
+                "function getAPY() view returns (uint256)",
+                "event Staked(address indexed user, uint256 amount)",
+                "event Withdrawn(address indexed user, uint256 amount)",
+                "event RewardClaimed(address indexed user, uint256 amount)",
+                "event LockExtended(address indexed user, uint256 newLockUntil)"
+            ];
+
+            const TOKEN_ABI = [
+                "function balanceOf(address) view returns (uint256)",
+                "function allowance(address,address) view returns (uint256)",
+                "function approve(address spender, uint256 amount) returns (bool)",
+                "function decimals() view returns (uint8)",
+                "function symbol() view returns (string)"
+            ];
+
+            // ============================================================
+            // STATE
+            // ============================================================
+            let provider = null;
+            let signer = null;
+            let account = null;
+            let stakingContract = null;
+            let tokenContract = null;
+            let decimals = 18;
+            let tokenSymbol = "RECEH";
+            let isConnected = false;
+            let isConnecting = false;
+
+            // ============================================================
+            // DOM REFS
+            // ============================================================
+            const $ = id => document.getElementById(id);
+            const connectBtn = $('connectBtn');
+            const stakedAmountEl = $('stakedAmount');
+            const pendingRewardEl = $('pendingReward');
+            const lockTimerEl = $('lockTimer');
+            const lockEndsEl = $('lockEnds');
+            const canUnstakeStatusEl = $('canUnstakeStatus');
+            const totalStakedEl = $('totalStaked');
+            const apyEl = $('apy');
+            const lockDurationEl = $('lockDuration');
+            const unclaimedRewardsEl = $('unclaimedRewards');
+            const contractBalanceEl = $('contractBalance');
+            const rewardRateEl = $('rewardRate');
+            const walletBalanceEl = $('walletBalance');
+            const activityContainer = $('activityContainer');
+            const activityCount = $('activityCount');
+            const stakeInput = $('stakeAmount');
+            const withdrawInput = $('withdrawAmount');
+
+            const notifOverlay = $('notificationOverlay');
+            const notifGlow = $('notifGlow');
+            const notifIconWrap = $('notifIconWrap');
+            const notifIcon = $('notificationIcon');
+            const notifTitle = $('notificationTitle');
+            const notifMsg = $('notificationMessage');
+            const notifTxContainer = $('notificationTxContainer');
+            const notifTxHash = $('notificationTxHash');
+            const notifTxLink = $('notificationTxLink');
+            const closeNotify = $('closeNotifyBtn');
+
+            // ============================================================
+            // NOTIFICATION
+            // ============================================================
+            function showNotification(status, message, txHash = null) {
+                const cfg = {
+                    success: { icon: '✅', title: 'SUCCESS', color: 'rgba(0,212,255,0.22)', bg: 'rgba(0,212,255,0.08)' },
+                    error: { icon: '❌', title: 'FAILED', color: 'rgba(255,75,75,0.22)', bg: 'rgba(255,75,75,0.07)' },
+                    pending: { icon: '⏳', title: 'PENDING', color: 'rgba(251,191,36,0.22)', bg: 'rgba(251,191,36,0.07)' },
+                    info: { icon: 'ℹ️', title: 'INFO', color: 'rgba(0,212,255,0.2)', bg: 'rgba(0,212,255,0.06)' }
+                }[status] || { icon: 'ℹ️', title: 'INFO', color: 'rgba(0,212,255,0.2)', bg: 'rgba(0,212,255,0.06)' };
+
+                notifIcon.innerText = cfg.icon;
+                notifTitle.innerText = cfg.title;
+                notifMsg.innerText = message;
+                notifIconWrap.style.background = cfg.bg;
+                notifGlow.style.background = `radial-gradient(circle,${cfg.color} 0%,transparent 70%)`;
+
+                if (txHash) {
+                    notifTxHash.innerText = txHash.slice(0, 12) + '…' + txHash.slice(-6);
+                    notifTxLink.href = `${EXPLORER}/tx/${txHash}`;
+                    notifTxContainer.style.display = 'flex';
+                } else {
+                    notifTxContainer.style.display = 'none';
+                }
+
+                notifOverlay.classList.add('show');
+
+                if (status !== 'pending') {
+                    setTimeout(() => notifOverlay.classList.remove('show'), 8000);
+                }
+            }
+
+            closeNotify.addEventListener('click', () => notifOverlay.classList.remove('show'));
+            notifOverlay.addEventListener('click', e => {
+                if (e.target === notifOverlay) notifOverlay.classList.remove('show');
+            });
+
+            // ============================================================
+            // UTILITIES
+            // ============================================================
+            const sa = a => a ? a.slice(0, 6) + '…' + a.slice(-4) : '';
+
+            function fmt(v, d = 2, trim = true) {
+                if (v == null) return '0';
+                let n = parseFloat(v);
+                if (isNaN(n)) return '0';
+                if (trim) {
+                    if (Number.isInteger(n) && d >= 0) return n.toString();
+                    return parseFloat(n.toFixed(d)).toString();
+                }
+                return n.toFixed(d);
+            }
+
+            function fmtAPY(b) {
+                let p = Number(b) / 100;
+                return (p % 1 === 0 ? p.toFixed(0) : p.toFixed(2)) + '%';
+            }
+
+            function timeAgo(ts) {
+                const s = Math.floor(Date.now() / 1000 - ts);
+                if (s < 60) return s + 's ago';
+                if (s < 3600) return Math.floor(s / 60) + 'min ago';
+                if (s < 86400) return Math.floor(s / 3600) + 'hr ago';
+                return Math.floor(s / 86400) + 'd ago';
+            }
+
+            // ============================================================
+            // VALIDATE PROVIDER
+            // ============================================================
+            function ensureProvider() {
+                if (!provider) {
+                    throw new Error('Provider not initialized. Please connect your wallet.');
+                }
+                return provider;
+            }
+
+            function ensureSigner() {
+                if (!signer) {
+                    throw new Error('Signer not available. Please reconnect your wallet.');
+                }
+                return signer;
+            }
+
+            // ============================================================
+            // CONNECT VIA FALLBACK
+            // ============================================================
+            async function connectFallback() {
+                if (isConnecting) {
+                    showNotification('info', 'Connection already in progress...');
+                    return false;
+                }
+
+                try {
+                    isConnecting = true;
+                    connectBtn.disabled = true;
+                    connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>&nbsp;Connecting...';
+
+                    if (!window.ethereum) {
+                        showNotification('error', 'Please install MetaMask or Bitget Wallet.');
+                        return false;
+                    }
+
+                    provider = null;
+                    signer = null;
+                    account = null;
+
+                    provider = new ethers.BrowserProvider(window.ethereum);
+
+                    if (!provider) {
+                        throw new Error('Failed to create provider');
+                    }
+
+                    // Request accounts
+                    const accounts = await provider.send('eth_requestAccounts', []);
+
+                    if (!accounts || accounts.length === 0) {
+                        throw new Error('No accounts found');
+                    }
+
+                    signer = await provider.getSigner();
+
+                    if (!signer) {
+                        throw new Error('Failed to get signer');
+                    }
+
+                    account = await signer.getAddress();
+
+                    if (!account) {
+                        throw new Error('Failed to get account address');
+                    }
+
+                    isConnected = true;
+
+                    // Cek network
+                    try {
+                        const net = await provider.getNetwork();
+                        if (Number(net.chainId) !== CHAIN_ID) {
+                            try {
+                                await provider.send('wallet_switchEthereumChain', [
+                                    { chainId: '0x' + CHAIN_ID.toString(16) }
+                                ]);
+                            } catch (e) {
+                                if (e.code === 4902) {
+                                    await provider.send('wallet_addEthereumChain', [{
+                                        chainId: '0x' + CHAIN_ID.toString(16),
+                                        chainName: CHAIN_NAME,
+                                        nativeCurrency: {
+                                            name: CURRENCY, symbol: CURRENCY,
+                                            decimals: 18
+                                        },
+                                        rpcUrls: [RPC_URL],
+                                        blockExplorerUrls: [EXPLORER]
+                                    }]);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Network check warning:', e);
+                    }
+
+                    // Init contracts
+                    stakingContract = new ethers.Contract(STAKING_ADDR, STAKING_ABI, signer);
+                    tokenContract = new ethers.Contract(TOKEN_ADDR, TOKEN_ABI, signer);
+
+                    try {
+                        decimals = await tokenContract.decimals();
+                        tokenSymbol = await tokenContract.symbol();
+                    } catch (e) {
+                        console.warn('Token info warning:', e);
+                    }
+
+                    await updateBtn();
+                    await refreshAll();
+
+                    showNotification('success', `Connected: ${sa(account)}`);
+
+                    window.ethereum.on('accountsChanged', (newAccounts) => {
+                        if (!newAccounts || newAccounts.length === 0) {
+                            disconnectWallet();
+                        } else {
+
+                            account = newAccounts[0];
+                            updateBtn();
+                            refreshAll();
+                            showNotification('info', `Switched to: ${sa(account)}`);
+                        }
+                    });
+
+                    window.ethereum.on('chainChanged', () => {
+                        window.location.reload();
+                    });
+
+                    return true;
+
+                } catch (error) {
+                    console.error('❌ Connection error:', error);
+
+                    // Reset state
+                    isConnected = false;
+                    account = null;
+                    signer = null;
+                    provider = null;
+                    stakingContract = null;
+                    tokenContract = null;
+
+                    if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                        showNotification('error', 'Connection cancelled by user.');
+                    } else {
+                        showNotification('error', error.message || 'Failed to connect wallet.');
+                    }
+
+                    return false;
+
+                } finally {
+                    isConnecting = false;
+                    connectBtn.disabled = false;
+                    await updateBtn();
+                }
+            }
+
+            // ============================================================
+            // CONNECT VIA WEB3MODAL - FIXED
+            // ============================================================
+            async function connectWithWeb3Modal() {
+                try {
+                    if (typeof Web3Modal === 'undefined') {
+                        return false;
+                    }
+
+                    if (isConnecting) {
+                        return false;
+                    }
+
+                    isConnecting = true;
+                    connectBtn.disabled = true;
+                    connectBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>&nbsp;Connecting...';
+
+                    // Reset provider
+                    provider = null;
+                    signer = null;
+                    account = null;
+
+                    let web3Modal = new Web3Modal({
+                        projectId: 'f4b235b3e79a47d5c8e030f81e38e694',
+                        theme: 'dark',
+                        themeVariables: {
+                            '--w3m-font-family': 'Space Grotesk, sans-serif',
+                            '--w3m-accent': '#d4af37',
+                            '--w3m-background-color': '#0e0e18',
+                            '--w3m-border-radius': '16px',
+                        }
+                    });
+
+                    const web3Provider = await web3Modal.open();
+
+                    if (!web3Provider) {
+                        return false;
+                    }
+
+                    provider = new ethers.BrowserProvider(web3Provider);
+
+                    if (!provider) {
+                        throw new Error('Failed to create provider');
+                    }
+
+                    signer = await provider.getSigner();
+
+                    if (!signer) {
+                        throw new Error('Failed to get signer');
+                    }
+
+                    account = await signer.getAddress();
+
+                    if (!account) {
+                        throw new Error('Failed to get account address');
+                    }
+
+                    isConnected = true;
+
+                    // Cek network
+                    try {
+                        const net = await provider.getNetwork();
+                        if (Number(net.chainId) !== CHAIN_ID) {
+                            try {
+                                await provider.send('wallet_switchEthereumChain', [
+                                    { chainId: '0x' + CHAIN_ID.toString(16) }
+                                ]);
+                            } catch (e) {
+                                if (e.code === 4902) {
+                                    await provider.send('wallet_addEthereumChain', [{
+                                        chainId: '0x' + CHAIN_ID.toString(16),
+                                        chainName: CHAIN_NAME,
+                                        nativeCurrency: {
+                                            name: CURRENCY, symbol: CURRENCY,
+                                            decimals: 18
+                                        },
+                                        rpcUrls: [RPC_URL],
+                                        blockExplorerUrls: [EXPLORER]
+                                    }]);
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Network check warning:', e);
+                    }
+
+                    stakingContract = new ethers.Contract(STAKING_ADDR, STAKING_ABI, signer);
+                    tokenContract = new ethers.Contract(TOKEN_ADDR, TOKEN_ABI, signer);
+
+                    try {
+                        decimals = await tokenContract.decimals();
+                        tokenSymbol = await tokenContract.symbol();
+                    } catch (e) { }
+
+                    await updateBtn();
+                    await refreshAll();
+
+                    showNotification('success', `Connected: ${sa(account)}`);
+
+                    web3Provider.on('disconnect', () => {
+                        disconnectWallet();
+                    });
+
+                    return true;
+
+                } catch (error) {
+                    console.error('Web3Modal error:', error);
+                    isConnected = false;
+                    account = null;
+                    signer = null;
+                    provider = null;
+                    stakingContract = null;
+                    tokenContract = null;
+
+                    if (error.code === 4001 || error.code === 'ACTION_REJECTED') {
+                        showNotification('error', 'Connection cancelled.');
+                    } else {
+                        showNotification('error', error.message || 'Failed to connect wallet.');
+                    }
+                    return false;
+
+                } finally {
+                    isConnecting = false;
+                    connectBtn.disabled = false;
+                    await updateBtn();
+                }
+            }
+
+            // ============================================================
+            // MAIN CONNECT
+            // ============================================================
+            async function connectWallet() {
+                const success = await connectWithWeb3Modal();
+                if (success) return;
+                await connectFallback();
+            }
+
+            // ============================================================
+            // DISCONNECT
+            // ============================================================
+            function disconnectWallet() {
+                isConnected = false;
+                account = null;
+                signer = null;
+                provider = null;
+                stakingContract = null;
+                tokenContract = null;
+                isConnecting = false;
+                updateBtn();
+                refreshAll();
+                showNotification('info', 'Wallet disconnected.');
+            }
+
+            // ============================================================
+            // UPDATE UI
+            // ============================================================
+            async function updateBtn() {
+                if (!isConnected || !account) {
+                    connectBtn.innerHTML = '<i class="fas fa-plug"></i>&nbsp;Connect';
+                    connectBtn.onclick = connectWallet;
+                    connectBtn.disabled = false;
+                    return;
+                }
+
+                try {
+                    if (!provider) {
+                        throw new Error('Provider not available');
+                    }
+
+                    const net = await provider.getNetwork();
+                    if (Number(net.chainId) !== CHAIN_ID) {
+                        connectBtn.innerHTML = '<i class="fas fa-triangle-exclamation"></i>&nbsp;Switch Network';
+                        connectBtn.onclick = async () => {
+                            try {
+                                await provider.send('wallet_switchEthereumChain', [
+                                    { chainId: '0x' + CHAIN_ID.toString(16) }
+                                ]);
+                            } catch (e) {
+                                if (e.code === 4902) {
+                                    await provider.send('wallet_addEthereumChain', [{
+                                        chainId: '0x' + CHAIN_ID.toString(16),
+                                        chainName: CHAIN_NAME,
+                                        nativeCurrency: {
+                                            name: CURRENCY, symbol: CURRENCY,
+                                            decimals: 18
+                                        },
+                                        rpcUrls: [RPC_URL],
+                                        blockExplorerUrls: [EXPLORER]
+                                    }]);
+                                }
+                            }
+                        };
+                        connectBtn.disabled = false;
+                    } else {
+                        connectBtn.innerHTML =
+                            `<span style="width:6px;height:6px;border-radius:50%;background:#00d4ff;display:inline-block;box-shadow:0 0 6px #00d4ff;"></span>&nbsp;${sa(account)}`;
+                        connectBtn.onclick = disconnectWallet;
+                        connectBtn.disabled = false;
+                    }
+                } catch (e) {
+                    connectBtn.innerHTML =
+                        `<span style="width:6px;height:6px;border-radius:50%;background:#00d4ff;display:inline-block;"></span>&nbsp;${sa(account)}`;
+                    connectBtn.onclick = disconnectWallet;
+                    connectBtn.disabled = false;
+                }
+            }
+
+            // ============================================================
+            // REFRESH DATA
+            // ============================================================
+            async function refreshUser() {
+                if (!isConnected || !account || !stakingContract) {
+                    stakedAmountEl.innerText = '0.00';
+                    pendingRewardEl.innerText = '0.00';
+                    lockEndsEl.innerText = '-';
+                    canUnstakeStatusEl.className = 'chip chip-no';
+                    canUnstakeStatusEl.innerText = '❌ Locked';
+                    lockTimerEl.innerHTML = '<i class="fas fa-lock" style="font-size:.58rem;"></i>&nbsp;--';
+                    walletBalanceEl.innerText = '0.00';
+                    return;
+                }
+
+                try {
+                    const user = await stakingContract.users(account);
+                    const staked = ethers.formatUnits(user[0], decimals);
+                    const locked = Number(user[1]);
+                    const rewards = await stakingContract.earned(account);
+
+                    stakedAmountEl.innerText = fmt(staked, 2);
+                    pendingRewardEl.innerText = fmt(ethers.formatUnits(rewards, decimals), 4, true);
+
+                    const lockRem = await stakingContract.lockTimeRemaining(account);
+                    const can = await stakingContract.canUnstake(account);
+
+                    if (can) {
+                        canUnstakeStatusEl.className = 'chip chip-ok';
+                        canUnstakeStatusEl.innerText = '✅ Can Withdraw';
+                    } else {
+                        canUnstakeStatusEl.className = 'chip chip-no';
+                        canUnstakeStatusEl.innerText = '❌ Locked';
+                    }
+
+                    if (locked === 0) {
+                        lockEndsEl.innerText = 'No staking yet';
+                        lockTimerEl.innerHTML = '<i class="fas fa-lock" style="font-size:.58rem;"></i>&nbsp;--';
+                    } else {
+                        const d = new Date(locked * 1000);
+                        lockEndsEl.innerText = d.toLocaleDateString('en-US', {
+                            day: '2-digit', month: 'short',
+                            year: 'numeric'
+                        }) + ' ' + d.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        const secs = Number(lockRem);
+                        if (secs <= 0) {
+                            lockTimerEl.innerHTML = '<i class="fas fa-lock-open" style="font-size:.58rem;"></i>&nbsp;Unlocked';
+                        } else {
+                            const dy = Math.floor(secs / 86400),
+                                hr = Math.floor((secs % 86400) / 3600);
+                            lockTimerEl.innerHTML =
+                                `<i class="fas fa-lock" style="font-size:.58rem;"></i>&nbsp;${dy}d ${hr}hr`;
+                        }
+                    }
+
+                    if (tokenContract && account) {
+                        const bal = await tokenContract.balanceOf(account);
+                        walletBalanceEl.innerText = fmt(ethers.formatUnits(bal, decimals), 2);
+                    }
+                } catch (e) {
+                    console.error('refreshUser error:', e);
+                }
+            }
+
+            async function refreshPool() {
+                if (!stakingContract) {
+                    totalStakedEl.innerText = '0 RECEH';
+                    apyEl.innerText = '0%';
+                    lockDurationEl.innerText = '30 days';
+                    unclaimedRewardsEl.innerText = '0.00';
+                    contractBalanceEl.innerText = '0.00';
+                    rewardRateEl.innerText = '0/sec';
+                    return;
+                }
+
+                try {
+                    const total = await stakingContract.totalStaked();
+                    totalStakedEl.innerText = fmt(ethers.formatUnits(total, decimals), 0) + ' ' + tokenSymbol;
+
+                    const apyVal = await stakingContract.getAPY();
+                    apyEl.innerText = fmtAPY(apyVal);
+
+                    const lockDur = await stakingContract.lockDuration();
+                    const days = Number(lockDur) / 86400;
+                    lockDurationEl.innerText = (Number.isInteger(days) ? days : days.toFixed(1)) + ' days';
+
+                    const unclaimed = await stakingContract.totalUnclaimedRewards();
+                    unclaimedRewardsEl.innerText = fmt(ethers.formatUnits(unclaimed, decimals), 2);
+
+                    if (tokenContract) {
+                        const cb = await tokenContract.balanceOf(STAKING_ADDR);
+                        contractBalanceEl.innerText = fmt(ethers.formatUnits(cb, decimals), 2);
+                    }
+
+                    const rate = await stakingContract.rewardRate();
+                    rewardRateEl.innerText = ethers.formatUnits(rate, decimals) + '/sec';
+                } catch (e) {
+                    console.error('refreshPool error:', e);
+                }
+            }
+
+            async function refreshActivity() {
+                if (!isConnected || !stakingContract || !provider) {
+                    activityContainer.innerHTML =
+                        `<div class="empty"><div class="empty-ico"><i class="fas fa-plug"></i></div><h3>Not Connected</h3><p>Connect your wallet to view transaction history</p></div>`;
+                    if (activityCount) activityCount.innerText = '0 transactions';
+                    return;
+                }
+
+                try {
+                    const cur = await provider.getBlockNumber();
+                    const f = account ? [account] : null;
+                    let all = [];
+
+                    try {
+                        const from = Math.max(0, cur - 2000);
+                        const s = await stakingContract.queryFilter(stakingContract.filters.Staked(f), from);
+                        const w = await stakingContract.queryFilter(stakingContract.filters.Withdrawn(f), from);
+                        const c = await stakingContract.queryFilter(stakingContract.filters.RewardClaimed(f), from);
+                        const ex = await stakingContract.queryFilter(stakingContract.filters.LockExtended(f), from);
+                        all = [...s, ...w, ...c, ...ex];
+                    } catch (e) {
+                        console.warn('Activity query warning:', e);
+                    }
+
+                    all.sort((a, b) => b.blockNumber - a.blockNumber);
+                    const latest = all.slice(0, 12);
+
+                    if (latest.length === 0) {
+                        activityContainer.innerHTML =
+                            `<div class="empty"><div class="empty-ico"><i class="fas fa-database"></i></div><h3>No Activity Yet</h3><p>Be the first to stake RECEH!</p></div>`;
+                        if (activityCount) activityCount.innerText = '0 transactions';
+                        return;
+                    }
+
+                    if (activityCount) activityCount.innerText = latest.length + ' transactions';
+
+                    let html = '<div class="alist">';
+                    for (let ev of latest) {
+                        const blk = await ev.getBlock();
+                        const ts = blk.timestamp;
+                        const user = ev.args[0];
+                        const short = sa(user);
+                        const txs = ev.transactionHash.slice(0, 8) + '…' + ev.transactionHash.slice(-4);
+                        let ico, desc;
+
+                        if (ev.eventName === 'Staked') {
+                            ico = '📥';
+                            const a = ethers.formatUnits(ev.args[1], decimals);
+                            desc = `Stake ${fmt(a, 2)} RECEH`;
+                        } else if (ev.eventName === 'Withdrawn') {
+                            ico = '📤';
+                            const a = ethers.formatUnits(ev.args[1], decimals);
+                            desc = `Withdraw ${fmt(a, 2)} RECEH`;
+                        } else if (ev.eventName === 'RewardClaimed') {
+                            ico = '🎁';
+                            const a = ethers.formatUnits(ev.args[1], decimals);
+                            desc = `Claim ${fmt(a, 2)} RECEH`;
+                        } else {
+                            ico = '⏳';
+                            desc = 'Extend lock';
+                        }
+
+                        html += `<div class="aitem">
+                                    <div class="aico">${ico}</div>
+                                    <div class="ainf">
+                                        <div class="atop">
+                                            <span>${desc}</span>
+                                            <span class="atime">${timeAgo(ts)}</span>
+                                        </div>
+                                        <div class="abot">${short} · ${txs}</div>
+                                    </div>
+                                </div>`;
+                    }
+                    html += '</div>';
+                    activityContainer.innerHTML = html;
+                } catch (e) {
+                    console.error('refreshActivity error:', e);
+                    activityContainer.innerHTML =
+                        `<div class="empty"><div class="empty-ico"><i class="fas fa-triangle-exclamation" style="color:#fb923c;"></i></div><h3>RPC Limit</h3><p>Please try again in a moment</p></div>`;
+                }
+            }
+
+            async function refreshAll() {
+                await refreshUser();
+                await refreshPool();
+                await updateBtn();
+                await refreshActivity();
+            }
+
+            let refreshInterval;
+
+            function startRefresh() {
+                if (refreshInterval) clearInterval(refreshInterval);
+                refreshAll();
+                refreshInterval = setInterval(refreshAll, 60000);
+            }
+
+            // ============================================================
+            // STAKING ACTIONS
+            // ============================================================
+            async function handleStake() {
+                if (!isConnected || !account) {
+                    showNotification('error', 'Please connect your wallet first');
+                    return;
+                }
+
+                const amount = stakeInput.value;
+                if (!amount || parseFloat(amount) <= 0) {
+                    showNotification('error', 'Please enter a valid amount');
+                    return;
+                }
+
+                try {
+                    const wei = ethers.parseUnits(amount, decimals);
+
+                    const al = await tokenContract.allowance(account, STAKING_ADDR);
+                    if (al < wei) {
+                        showNotification('pending', 'Approving token allowance…');
+                        const at = await tokenContract.approve(STAKING_ADDR, wei);
+                        await at.wait();
+                    }
+
+                    showNotification('pending', 'Processing stake…');
+                    const tx = await stakingContract.stake(wei);
+                    await tx.wait();
+
+                    showNotification('success', `Successfully staked ${amount} ${tokenSymbol}!`, tx.hash);
+                    refreshAll();
+                    stakeInput.value = '';
+                } catch (e) {
+                    showNotification('error', e.reason || e.message || 'Staking failed. Please try again.');
+                }
+            }
+
+            async function handleWithdraw() {
+                if (!isConnected || !account) {
+                    showNotification('error', 'Please connect your wallet first');
+                    return;
+                }
+
+                const amount = withdrawInput.value;
+                if (!amount || parseFloat(amount) <= 0) {
+                    showNotification('error', 'Please enter a valid amount');
+                    return;
+                }
+
+                try {
+                    const wei = ethers.parseUnits(amount, decimals);
+                    showNotification('pending', 'Processing withdrawal…');
+                    const tx = await stakingContract.withdraw(wei);
+                    await tx.wait();
+                    showNotification('success', `Successfully withdrew ${amount} ${tokenSymbol}!`, tx.hash);
+                    refreshAll();
+                    withdrawInput.value = '';
+                } catch (e) {
+                    showNotification('error', e.reason || e.message || 'Withdrawal failed. Tokens may still be locked.');
+                }
+            }
+
+            async function handleExtend() {
+                if (!isConnected || !account) {
+                    showNotification('error', 'Please connect your wallet first');
+                    return;
+                }
+
+                try {
+                    showNotification('pending', 'Extending lock period…');
+                    const tx = await stakingContract.extendLock();
+                    await tx.wait();
+                    showNotification('success', 'Lock successfully extended by 30 days!', tx.hash);
+                    refreshAll();
+                } catch (e) {
+                    showNotification('error', e.reason || e.message || 'Failed to extend lock');
+                }
+            }
+
+            async function handleClaim() {
+                if (!isConnected || !account) {
+                    showNotification('error', 'Please connect your wallet first');
+                    return;
+                }
+
+                try {
+                    showNotification('pending', 'Claiming reward…');
+                    const tx = await stakingContract.claimReward();
+                    const receipt = await tx.wait();
+
+                    let claimed = null;
+                    for (const log of receipt.logs) {
+                        try {
+                            const p = stakingContract.interface.parseLog(log);
+                            if (p && p.name === 'RewardClaimed') {
+                                claimed = ethers.formatUnits(p.args.amount, decimals);
+                                break;
+                            }
+                        } catch { }
+                    }
+
+                    showNotification('success',
+                        claimed ? `Successfully claimed ${fmt(claimed, 4)} ${tokenSymbol}!` :
+                            'Reward claimed successfully!',
+                        tx.hash
+                    );
+                    refreshAll();
+                } catch (e) {
+                    showNotification('error', e.reason || e.message || 'Claim failed');
+                }
+            }
+
+            function setStakeMax() {
+                const b = walletBalanceEl.innerText.replace(/,/g, '');
+                if (b && parseFloat(b) > 0) stakeInput.value = b;
+            }
+
+            async function setWithdrawMax() {
+                if (!isConnected || !stakingContract || !account) {
+                    showNotification('error', 'Please connect your wallet first');
+                    return;
+                }
+                try {
+                    const user = await stakingContract.users(account);
+                    withdrawInput.value = fmt(ethers.formatUnits(user[0], decimals), 6);
+                } catch {
+                    showNotification('error', 'Failed to fetch maximum balance');
+                }
+            }
+
+            // ============================================================
+            // EVENT LISTENERS
+            // ============================================================
+            $('stakeBtn').addEventListener('click', handleStake);
+            $('withdrawBtn').addEventListener('click', handleWithdraw);
+            $('extendLockBtn').addEventListener('click', handleExtend);
+            $('claimBtn').addEventListener('click', handleClaim);
+            $('stakeMaxBtn').addEventListener('click', setStakeMax);
+            $('withdrawMaxBtn').addEventListener('click', setWithdrawMax);
+
+            connectBtn.addEventListener('click', () => {
+                if (isConnected) {
+                    disconnectWallet();
+                } else {
+                    connectWallet();
+                }
+            });
+
+            // ============================================================
+            // CALCULATOR
+            // ============================================================
+            function initCalculator() {
+                const calcInput = document.getElementById('calcStakeAmount');
+                if (!calcInput) return;
+
+                function updateCalculator() {
+                    let stakeAmount = parseFloat(calcInput.value) || 0;
+                    const APY = 0.20;
+                    const SECONDS_PER_YEAR = 365 * 24 * 60 * 60;
+                    const rewardPerYear = stakeAmount * APY;
+                    const rewardPerSecond = rewardPerYear / SECONDS_PER_YEAR;
+
+                    const periods = [
+                        { days: 1, elementId: 'calcDay1' },
+                        { days: 7, elementId: 'calcWeek1' },
+                        { days: 30, elementId: 'calcMonth1' },
+                        { days: 365, elementId: 'calcYear1' }
+                    ];
+
+                    for (let p of periods) {
+                        const reward = rewardPerSecond * (p.days * 24 * 60 * 60);
+                        const el = document.getElementById(p.elementId);
+                        if (el) {
+                            if (reward < 0.0001 && reward > 0) {
+                                el.innerText = '< 0.0001 RECEH';
+                            } else {
+                                el.innerText = reward.toFixed(4) + ' RECEH';
+                            }
+                        }
+                    }
+                }
+
+                calcInput.addEventListener('input', updateCalculator);
+                updateCalculator();
+            }
+
+            // ============================================================
+            // FAQ
+            // ============================================================
+            window.toggleFaq = function (el) {
+                const isOpen = el.classList.contains('open');
+                document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+                if (!isOpen) el.classList.add('open');
+            };
+
+            // ============================================================
+            // INIT
+            // ============================================================
+            async function init() {
+                try {
+                    if (window.ethereum) {
+                        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                        if (accounts && accounts.length > 0) {
+                            await connectFallback();
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Auto-connect skipped:', e);
+                }
+
+                await refreshAll();
+                initCalculator();
+                startRefresh();
+
+                console.log('🚀 RECEH Staking Dashboard initialized');
+                console.log('🔧 Fixed: provider/signer null checks added');
+            }
+
+            function loadWeb3Modal() {
+                return new Promise((resolve) => {
+                    if (typeof Web3Modal !== 'undefined') {
+                        resolve(true);
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.src = 'https://cdn.jsdelivr.net/npm/@web3modal/ethers@4.0.12/dist/index.min.js';
+                    script.onload = () => resolve(true);
+                    script.onerror = () => resolve(false);
+                    document.head.appendChild(script);
+                });
+            }
+
+            loadWeb3Modal().then(() => {
+                init();
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
